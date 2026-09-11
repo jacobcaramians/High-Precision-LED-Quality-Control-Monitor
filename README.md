@@ -35,6 +35,14 @@ Connect the three DFRobot sensors to channels 0, 1, and 2 of the multiplexer.
 
 Supply clean 3.3V/5V power to the sensor array.
 
+Here is the pcb design for the extender module
+
+<img width="462" height="686" alt="image" src="https://github.com/user-attachments/assets/b8b2f9bb-526d-412b-86e4-19260b5121a9" />
+
+here is the wiring diagram
+
+<img width="631" height="646" alt="image" src="https://github.com/user-attachments/assets/a3dc4a34-9fe6-4668-a6a5-26b2c9f0277b" />
+
 **Calibration Update Guide**
 -
 
@@ -43,3 +51,6 @@ If swapping sensors or re-calibrating against a new integrating sphere, update t
 Format: {Raw_Wand_Reading, True_Sphere_Reading}
 
 Requirement: Data must be listed in strictly ascending order for the piecewise logic to route properly.
+
+
+
