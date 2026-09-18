@@ -34,12 +34,14 @@ static lv_obj_t *lbl_lux_indiv   = nullptr;
 static lv_obj_t *lbl_cct_val     = nullptr;
 static lv_obj_t *lbl_cct_indiv   = nullptr; 
 static lv_obj_t *lbl_std_cct_val = nullptr; 
-static lv_obj_t *lbl_status_val  = nullptr;
-static lv_obj_t *card_status     = nullptr;
 
 static lv_obj_t *chart           = nullptr;
 static lv_chart_series_t *ser_lux = nullptr;
 static lv_chart_series_t *ser_cct = nullptr;
+
+// Pop-up Alert Modal
+static lv_obj_t *popup_bg        = nullptr;
+static lv_obj_t *lbl_popup_msg   = nullptr;
 
 static unsigned long last_read_ms = 0;
 #define READ_INTERVAL_MS 250
@@ -144,95 +146,96 @@ uint16_t get_closest_std_cct(uint16_t raw_cct) {
 // ─── Build UI ─────────────────────────────────────────────────────────────────
 void build_screen() {
     lv_obj_t *scr = lv_scr_act();
-    lv_obj_set_style_bg_color(scr, lv_color_hex(0x1A1A2E), 0);
+    // New Dark Charcoal Background
+    lv_obj_set_style_bg_color(scr, lv_color_hex(0x181818), 0);
 
     lv_obj_t *title = lv_label_create(scr);
     lv_label_set_text(title, "Multi-Sensor Monitor & Live Trends");
-    lv_obj_set_style_text_color(title, lv_color_hex(0xE0E0E0), 0);
+    lv_obj_set_style_text_color(title, lv_color_hex(0xA8A8A8), 0);
     lv_obj_set_style_text_font(title, &lv_font_montserrat_20, 0); 
     lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 10);
 
-    // 1. Lux Card (Left)
+    // 1. Lux Card (Left) - SCALED UP
     lv_obj_t *card_lux = lv_obj_create(scr);
-    lv_obj_set_size(card_lux, 230, 140); 
-    lv_obj_align(card_lux, LV_ALIGN_TOP_LEFT, 25, 45);
-    lv_obj_set_style_bg_color(card_lux, lv_color_hex(0x16213E), 0);
-    lv_obj_set_style_border_color(card_lux, lv_color_hex(0x0F3460), 0);
+    lv_obj_set_size(card_lux, 245, 160); 
+    lv_obj_align(card_lux, LV_ALIGN_TOP_LEFT, 20, 40);
+    lv_obj_set_style_bg_color(card_lux, lv_color_hex(0x0C1222), 0);
+    lv_obj_set_style_border_color(card_lux, lv_color_hex(0x081C36), 0);
     lv_obj_set_style_border_width(card_lux, 2, 0);
     lv_obj_clear_flag(card_lux, LV_OBJ_FLAG_SCROLLABLE);
 
     lv_obj_t *lbl_lux_title = lv_label_create(card_lux);
     lv_label_set_text(lbl_lux_title, "Avg Illuminance");
-    lv_obj_set_style_text_color(lbl_lux_title, lv_color_hex(0x8892B0), 0);
+    lv_obj_set_style_text_color(lbl_lux_title, lv_color_hex(0x666D84), 0);
     lv_obj_set_style_text_font(lbl_lux_title, &lv_font_montserrat_16, 0); 
-    lv_obj_align(lbl_lux_title, LV_ALIGN_TOP_MID, 0, 0);
+    lv_obj_align(lbl_lux_title, LV_ALIGN_TOP_MID, 0, 5);
 
     lbl_lux_val = lv_label_create(card_lux);
     lv_label_set_text(lbl_lux_val, "--- lux");
     lv_obj_set_style_text_color(lbl_lux_val, lv_color_hex(0x64FFDA), 0);
     lv_obj_set_style_text_font(lbl_lux_val, &lv_font_montserrat_28, 0); 
-    lv_obj_align(lbl_lux_val, LV_ALIGN_CENTER, 0, -10);
+    lv_obj_align(lbl_lux_val, LV_ALIGN_CENTER, 0, -5);
 
     lbl_lux_indiv = lv_label_create(card_lux);
     lv_label_set_text(lbl_lux_indiv, "S1: --  S2: --  S3: --");
-    lv_obj_set_style_text_color(lbl_lux_indiv, lv_color_hex(0xA0AAB2), 0);
+    lv_obj_set_style_text_color(lbl_lux_indiv, lv_color_hex(0x788085), 0);
     lv_obj_set_style_text_font(lbl_lux_indiv, &lv_font_montserrat_14, 0); 
-    lv_obj_align(lbl_lux_indiv, LV_ALIGN_BOTTOM_MID, 0, 10);
+    lv_obj_align(lbl_lux_indiv, LV_ALIGN_BOTTOM_MID, 0, 5);
 
-    // 2. Raw CCT Card (Center)
+    // 2. Raw CCT Card (Center) - SCALED UP
     lv_obj_t *card_cct = lv_obj_create(scr);
-    lv_obj_set_size(card_cct, 230, 140);
-    lv_obj_align(card_cct, LV_ALIGN_TOP_MID, 0, 45);
-    lv_obj_set_style_bg_color(card_cct, lv_color_hex(0x16213E), 0);
-    lv_obj_set_style_border_color(card_cct, lv_color_hex(0x0F3460), 0);
+    lv_obj_set_size(card_cct, 245, 160);
+    lv_obj_align(card_cct, LV_ALIGN_TOP_MID, 0, 40);
+    lv_obj_set_style_bg_color(card_cct, lv_color_hex(0x0C1222), 0);
+    lv_obj_set_style_border_color(card_cct, lv_color_hex(0x081C36), 0);
     lv_obj_set_style_border_width(card_cct, 2, 0);
     lv_obj_clear_flag(card_cct, LV_OBJ_FLAG_SCROLLABLE);
 
     lv_obj_t *lbl_cct_title = lv_label_create(card_cct);
     lv_label_set_text(lbl_cct_title, "Avg Corrected Temp");
-    lv_obj_set_style_text_color(lbl_cct_title, lv_color_hex(0x8892B0), 0);
+    lv_obj_set_style_text_color(lbl_cct_title, lv_color_hex(0x666D84), 0);
     lv_obj_set_style_text_font(lbl_cct_title, &lv_font_montserrat_16, 0); 
-    lv_obj_align(lbl_cct_title, LV_ALIGN_TOP_MID, 0, 0);
+    lv_obj_align(lbl_cct_title, LV_ALIGN_TOP_MID, 0, 5);
 
     lbl_cct_val = lv_label_create(card_cct);
     lv_label_set_text(lbl_cct_val, "---- K");
     lv_obj_set_style_text_color(lbl_cct_val, lv_color_hex(0xFFD700), 0);
     lv_obj_set_style_text_font(lbl_cct_val, &lv_font_montserrat_28, 0); 
-    lv_obj_align(lbl_cct_val, LV_ALIGN_CENTER, 0, -10);
+    lv_obj_align(lbl_cct_val, LV_ALIGN_CENTER, 0, -5);
 
     lbl_cct_indiv = lv_label_create(card_cct);
     lv_label_set_text(lbl_cct_indiv, "S1: --  S2: --  S3: --");
-    lv_obj_set_style_text_color(lbl_cct_indiv, lv_color_hex(0xA0AAB2), 0);
+    lv_obj_set_style_text_color(lbl_cct_indiv, lv_color_hex(0x788085), 0);
     lv_obj_set_style_text_font(lbl_cct_indiv, &lv_font_montserrat_14, 0); 
-    lv_obj_align(lbl_cct_indiv, LV_ALIGN_BOTTOM_MID, 0, 10);
+    lv_obj_align(lbl_cct_indiv, LV_ALIGN_BOTTOM_MID, 0, 5);
 
-    // 3. Closest CCT rounder Card (Right card)
+    // 3. Closest CCT rounder Card (Right) - SCALED UP
     lv_obj_t *card_std = lv_obj_create(scr);
-    lv_obj_set_size(card_std, 230, 140);
-    lv_obj_align(card_std, LV_ALIGN_TOP_RIGHT, -25, 45);
-    lv_obj_set_style_bg_color(card_std, lv_color_hex(0x16213E), 0);
-    lv_obj_set_style_border_color(card_std, lv_color_hex(0x0F3460), 0);
+    lv_obj_set_size(card_std, 245, 160);
+    lv_obj_align(card_std, LV_ALIGN_TOP_RIGHT, -20, 40);
+    lv_obj_set_style_bg_color(card_std, lv_color_hex(0x0C1222), 0);
+    lv_obj_set_style_border_color(card_std, lv_color_hex(0x081C36), 0);
     lv_obj_set_style_border_width(card_std, 2, 0);
     lv_obj_clear_flag(card_std, LV_OBJ_FLAG_SCROLLABLE);
 
     lv_obj_t *lbl_std_title = lv_label_create(card_std);
-    lv_label_set_text(lbl_std_title, "Closest CCT in production");
-    lv_obj_set_style_text_color(lbl_std_title, lv_color_hex(0x8892B0), 0);
+    lv_label_set_text(lbl_std_title, "Closest Production CCT");
+    lv_obj_set_style_text_color(lbl_std_title, lv_color_hex(0x666D84), 0);
     lv_obj_set_style_text_font(lbl_std_title, &lv_font_montserrat_16, 0); 
-    lv_obj_align(lbl_std_title, LV_ALIGN_TOP_MID, 0, 0);
+    lv_obj_align(lbl_std_title, LV_ALIGN_TOP_MID, 0, 5);
 
     lbl_std_cct_val = lv_label_create(card_std);
     lv_label_set_text(lbl_std_cct_val, "---- K");
     lv_obj_set_style_text_color(lbl_std_cct_val, lv_color_hex(0xFFA500), 0);
     lv_obj_set_style_text_font(lbl_std_cct_val, &lv_font_montserrat_28, 0); 
-    lv_obj_align(lbl_std_cct_val, LV_ALIGN_CENTER, 0, -10);
+    lv_obj_align(lbl_std_cct_val, LV_ALIGN_CENTER, 0, -5);
 
-    // 4. Live Trend Chart (Middle-Bottom)
+    // 4. Live Trend Chart - EXPANDED TO FILL BOTTOM
     chart = lv_chart_create(scr);
-    lv_obj_set_size(chart, 750, 170);
-    lv_obj_align(chart, LV_ALIGN_TOP_MID, 0, 205);
-    lv_obj_set_style_bg_color(chart, lv_color_hex(0x16213E), 0);
-    lv_obj_set_style_border_color(chart, lv_color_hex(0x0F3460), 0);
+    lv_obj_set_size(chart, 760, 240); // Much taller now
+    lv_obj_align(chart, LV_ALIGN_BOTTOM_MID, 0, -15);
+    lv_obj_set_style_bg_color(chart, lv_color_hex(0x0C1222), 0);
+    lv_obj_set_style_border_color(chart, lv_color_hex(0x081C36), 0);
     
     // Hide the points on the line to make it smooth
     lv_obj_set_style_size(chart, 0, LV_PART_INDICATOR);
@@ -251,21 +254,22 @@ void build_screen() {
     ser_lux = lv_chart_add_series(chart, lv_color_hex(0x64FFDA), LV_CHART_AXIS_PRIMARY_Y);
     ser_cct = lv_chart_add_series(chart, lv_color_hex(0xFFD700), LV_CHART_AXIS_SECONDARY_Y);
 
-    // 5. Status / Fault bar (Bottom)
-    card_status = lv_obj_create(scr);
-    lv_obj_set_size(card_status, 750, 60);
-    lv_obj_align(card_status, LV_ALIGN_BOTTOM_MID, 0, -15);
-    lv_obj_set_style_bg_color(card_status, lv_color_hex(0x16213E), 0);
-    lv_obj_set_style_border_color(card_status, lv_color_hex(0x0F3460), 0);
-    lv_obj_set_style_border_width(card_status, 2, 0);
-    lv_obj_clear_flag(card_status, LV_OBJ_FLAG_SCROLLABLE);
+    // 5. NEW POP-UP ALERT MODAL (Hidden by default)
+    popup_bg = lv_obj_create(scr);
+    lv_obj_set_size(popup_bg, 550, 200);
+    lv_obj_center(popup_bg); // Placed dead center over the chart
+    lv_obj_set_style_bg_color(popup_bg, lv_color_hex(0x0C1222), 0);
+    lv_obj_set_style_border_color(popup_bg, lv_color_hex(0xC03939), 0);
+    lv_obj_set_style_border_width(popup_bg, 4, 0); // Thick emphasis border
+    lv_obj_set_style_radius(popup_bg, 15, 0); // Rounded corners
+    lv_obj_add_flag(popup_bg, LV_OBJ_FLAG_HIDDEN); // Invisible until needed
 
-    lbl_status_val = lv_label_create(card_status);
-    // Reduced font to Montserrat 16 so the longer warm-up message fits cleanly
-    lv_obj_set_style_text_font(lbl_status_val, &lv_font_montserrat_16, 0); 
-    lv_label_set_text(lbl_status_val, "Initializing...");
-    lv_obj_set_style_text_color(lbl_status_val, lv_color_hex(0xCCD6F6), 0);
-    lv_obj_center(lbl_status_val);
+    lbl_popup_msg = lv_label_create(popup_bg);
+    lv_obj_set_style_text_font(lbl_popup_msg, &lv_font_montserrat_20, 0); 
+    lv_label_set_long_mode(lbl_popup_msg, LV_LABEL_LONG_WRAP);
+    lv_obj_set_width(lbl_popup_msg, 500);
+    lv_label_set_text(lbl_popup_msg, "");
+    lv_obj_center(lbl_popup_msg);
 }
 
 // ─── Setup ────────────────────────────────────────────────────────────────────
@@ -388,35 +392,43 @@ void loop() {
                 lv_label_set_text(lbl_std_cct_val, buf_std);
             }
 
-            // ── Status Bar Updates ────────────────────────────────────────────
-            // 1. Initial 0-Second Warm-up Reminder
+            // ── Pop-Up Alert Logic ────────────────────────────────────────────
+            bool show_alert = true;
+
+            // 1. Initial Warm-up Reminder
             if (now < 20000) {
-                lv_label_set_text(lbl_status_val, "Please allow sensors to warm up for 5 min before testing initially");
-                lv_obj_set_style_text_color(lbl_status_val, lv_color_hex(0xFFD700), 0);
-                lv_obj_set_style_border_color(card_status, lv_color_hex(0xFFD700), 0);
+                lv_label_set_text(lbl_popup_msg, "INITIALIZING...\n\nPlease allow sensors to warm up for 5 minutes before testing.");
+                lv_obj_set_style_text_color(lbl_popup_msg, lv_color_hex(0xC0A100), 0);
+                lv_obj_set_style_border_color(popup_bg, lv_color_hex(0xC0A100), 0);
             }
             // 2. Hardware Fault Condition
             else if (avg_cct == 0 || valid_count == 0) {
-                lv_label_set_text(lbl_status_val, "HARDWARE FAULT: Sensors Unreachable");
-                lv_obj_set_style_text_color(lbl_status_val, lv_color_hex(0xFF4C4C), 0);
-                lv_obj_set_style_border_color(card_status, lv_color_hex(0xFF4C4C), 0);
+                lv_label_set_text(lbl_popup_msg, "HARDWARE FAULT!\n\nSensors Unreachable. Check wiring.");
+                lv_obj_set_style_text_color(lbl_popup_msg, lv_color_hex(0xC03939), 0);
+                lv_obj_set_style_border_color(popup_bg, lv_color_hex(0xC03939), 0);
             } 
             // 3. Operational Warning Faults
             else if (any_sensor_too_low) {
-                lv_label_set_text(lbl_status_val, "FAULT: TOO DARK, MOVE LIGHT TOWARDS SENSOR");
-                lv_obj_set_style_text_color(lbl_status_val, lv_color_hex(0xFF4C4C), 0);
-                lv_obj_set_style_border_color(card_status, lv_color_hex(0xFF4C4C), 0);
+                lv_label_set_text(lbl_popup_msg, "WARNING: TOO DARK\n\nMove light towards the sensor.");
+                lv_obj_set_style_text_color(lbl_popup_msg, lv_color_hex(0xC03939), 0);
+                lv_obj_set_style_border_color(popup_bg, lv_color_hex(0xC03939), 0);
             } 
             else if (any_sensor_too_high) {
-                lv_label_set_text(lbl_status_val, "FAULT: TOO BRIGHT, MOVE LIGHT AWAY FROM SENSOR");
-                lv_obj_set_style_text_color(lbl_status_val, lv_color_hex(0xFF4C4C), 0);
-                lv_obj_set_style_border_color(card_status, lv_color_hex(0xFF4C4C), 0);
+                lv_label_set_text(lbl_popup_msg, "WARNING: TOO BRIGHT\n\nMove light away from the sensor.");
+                lv_obj_set_style_text_color(lbl_popup_msg, lv_color_hex(0xC03939), 0);
+                lv_obj_set_style_border_color(popup_bg, lv_color_hex(0xC03939), 0);
             } 
-            // 4. Normal Operating State
+            // 4. Normal Operating State (No Alert)
             else {
-                lv_label_set_text(lbl_status_val, "MEASURING");
-                lv_obj_set_style_text_color(lbl_status_val, lv_color_hex(0x4CFF4C), 0);
-                lv_obj_set_style_border_color(card_status, lv_color_hex(0x4CFF4C), 0);
+                show_alert = false;
+            }
+
+            // Display or hide the pop-up box
+            if (show_alert) {
+                lv_obj_clear_flag(popup_bg, LV_OBJ_FLAG_HIDDEN); // Make it visible
+                lv_obj_move_foreground(popup_bg); // Ensure it renders on top of the chart
+            } else {
+                lv_obj_add_flag(popup_bg, LV_OBJ_FLAG_HIDDEN); // Hide it
             }
             
             // Push new data points to the live chart
