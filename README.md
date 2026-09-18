@@ -65,7 +65,7 @@ Requirement: Data must be listed in strictly ascending order for the piecewise l
 
 ### 3. Warm-Up Sequence
 *The system initialization and warm-up message.*
-![Warm Up Message](CCT_Tester_Photos/CCT_Tester_Wsarm_up_message.jpg)
+![Warm Up Message](CCT_Tester_Photos/CCT_Tester_Warm_up_message.jpg)
 
 ### 4. Live UI Dashboard
 *The LVGL interface updating dynamically during live testing.*
