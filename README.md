@@ -53,4 +53,22 @@ Format: {Raw_Wand_Reading, True_Sphere_Reading}
 Requirement: Data must be listed in strictly ascending order for the piecewise logic to route properly.
 
 
+## 📸 In-Field Use Case & Hardware
+
+### 1. The QC Monitor Station (In Use)
+*The fully assembled CCT Tester stationed on the test bench.*
+![CCT Tester in use](CCT_Tester_Photos/CCT_Tester_in_use.jpg)
+
+### 2. Custom 3D Printed Housing
+*The custom 3D-printed housing and aperture designed for the CCT Tester.*
+![3D Printed Housing](CCT_Tester_Photos/3D_Printed_housing_and_appature_for_CCT_Tester.jpg)
+
+### 3. Warm-Up Sequence
+*The system initialization and warm-up message.*
+![Warm Up Message](CCT_Tester_Photos/CCT_Tester_Wsarm_up_message.jpg)
+
+### 4. Live UI Dashboard
+*The LVGL interface updating dynamically during live testing.*
+![UI In Use](CCT_Tester_Photos/CCT_Tester_UI_in_use.jpg)
+
 
