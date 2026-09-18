@@ -1,3 +1,10 @@
+# High-Precision LED Quality Control Monitor
+
+![ESP32-S3](https://img.shields.io/badge/ESP32--S3-Espressif-red)
+![LVGL](https://img.shields.io/badge/LVGL-v8.x-blue)
+![C++](https://img.shields.io/badge/Language-C++-green)
+![License](https://img.shields.io/badge/License-MIT-lightgray)
+
 An industrial metrology tool designed for high-accuracy LED color temperature (CCT) and Illuminance (Lux) verification on the factory assembly line.
 Built on an ESP32-S3 CrowPanel HMI Display, this instrument aggregates data from a custom wand containing three I2C multiplexed DFRobot color temperature sensors. To overcome the inherent non-linear response curves of silicon optical sensors, the firmware utilizes individual, multi-point Piecewise Linear Interpolation Lookup Tables (LUTs), strictly calibrated against an Everfine Integrating Sphere and Sekonic C-7000 spectrometer.
 
@@ -26,6 +33,16 @@ DFRobot_ColorTemperature.h (Sensor driver)
 
 Standard Wire.h for I2C communication
 
+## IDE & Compiler Configuration
+
+If building via the Arduino IDE, the ESP32-S3 requires specific board settings to allocate enough memory for the LVGL frame buffers. Ensure the following are set in the `Tools` menu prior to compilation:
+
+*   **Board:** ESP32S3 Dev Module
+*   **Flash Size:** 8MB (or match your specific CrowPanel variant)
+*   **Partition Scheme:** 8M with spiffs (3MB APP/1.5MB SPIFFS)
+*   **PSRAM:** OPI PSRAM 
+*   **USB CDC On Boot:** Enabled (For Serial debugging)
+
 **Wiring & Setup**
 -
 
@@ -52,6 +69,11 @@ Format: {Raw_Wand_Reading, True_Sphere_Reading}
 
 Requirement: Data must be listed in strictly ascending order for the piecewise logic to route properly.
 
+## Operation Guide
+
+1.  **Boot & Initialization:** Upon power-up, the system will initialize the I2C bus and LVGL graphics. Wait for the "Warm-Up Sequence" message to clear.
+2.  **Sensor Placement:** Insert the custom 3D-printed wand directly over the LED array, ensuring the shroud rests flush against the surface to block ambient light.
+3.  **Data Readout:** The UI will dynamically poll the multiplexer and display real-time CCT and Lux metrics. Data updates at approximately 10Hz.
 
 ## In-Field Use Case & Hardware
 
