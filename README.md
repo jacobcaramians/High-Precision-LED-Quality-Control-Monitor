@@ -35,13 +35,13 @@ Connect the three DFRobot sensors to channels 0, 1, and 2 of the multiplexer.
 
 Supply clean 3.3V/5V power to the sensor array.
 
-Here is the pcb design for the extender module
+Here is the PCB design for the extender module:
 
-<img width="462" height="686" alt="image" src="https://github.com/user-attachments/assets/b8b2f9bb-526d-412b-86e4-19260b5121a9" />
+![PCB Design](CCT_Tester_I2C%20Expander/12C_expander_Board_for_CCT_Tester.png)
 
-here is the wiring diagram
+Here is the wiring diagram:
 
-<img width="631" height="646" alt="image" src="https://github.com/user-attachments/assets/a3dc4a34-9fe6-4668-a6a5-26b2c9f0277b" />
+![Wiring Diagram](CCT_Tester_I2C%20Expander/12Cexpander_wiring_diagram_for_CCT_Tester.png)
 
 **Calibration Update Guide**
 -
@@ -53,7 +53,7 @@ Format: {Raw_Wand_Reading, True_Sphere_Reading}
 Requirement: Data must be listed in strictly ascending order for the piecewise logic to route properly.
 
 
-## 📸 In-Field Use Case & Hardware
+## In-Field Use Case & Hardware
 
 ### 1. The QC Monitor Station (In Use)
 *The fully assembled CCT Tester stationed on the test bench.*
